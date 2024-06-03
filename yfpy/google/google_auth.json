@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "stinkyturtle",
+  "private_key_id": "bfc7676e39174356985b474062cbdf31d5e97489",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCxiUwIk/MJDgUC\nrrlPFlXiLWXwYm7nQLf835Ib70pHxp0Q5585OVQBPNVZCtRQzvkfYhw+FhNKqid5\nXNpJXsJRvGq6wt+iAsWZbZoH+7Xp9XmY57x4++o9f0kE9xN9q4fQJsRLQ44Sqn69\nDZvYT+7M+wKL38DZxrEeu7rdWcM7XsWZNRehkxCh/H2+IY1AE4I2Yrni1CT5ZSTU\nzywSlHWNfKasUjjBxejUepfOhqvT3nRLQ1+sz0ddAXjcJ5lVMlWYalOAw4etc+MN\nO+/3Wo6TPZ1hDgvYS5ms4z9+sQXCKLJoeUD10S5fAz2UWe/4bnJandwl7LKkdPZu\nBlQV0BK3AgMBAAECggEACxGaUfaXcnsTSOWH3CxyUlWuQ1x/uZ9JWVS/EUrMAMmb\nRVCLls/CMwmN661HK3qcAZ7mT+Ckd0VAjMqDOYvU5a+vn9FCjCFMHJK+xbylzN5n\nJGdeUtSx9/+Vl9+nsXAeWZXxKxgdJYDHwhW1H7lsFA+aSwo6RdmjdV0S+3X7PBpD\n8fVPtbDnXVqMVy4IPI/U/jo/UjSxEEnrn+aivqWPa7+ERCxhfhXstR4E0cFVZ0sP\nHBvPYb4j9cPXq7s4lxOOdMNAkGxboYuOjN1R6ZodiOYvLihWSEGAST6zoe8gEy8D\n67woH/MN0Jjm074kcRHWFn1UOp4Hdkzp3+/ISPTCgQKBgQDc3aE6LY4OCEAyrlCH\nKTk6Mm1aIPmbSh3i8KzTsEYq8wchyUjVDj1TedOLlJD1GkUTH74IREYIUzeL4RsH\n7Pktp+1tSgQHIl+ulG36pe7QF7Dfx0bJNzpNee4Tw2WBsNm+tju9WeFoptsjgNkM\nxhj0eD4GusVDaiPvhVszA8zPoQKBgQDNxyb+uMYqboKr8LefjUMwtG/TgvMErHXA\nVgVb8AH50wnhYc5EGFDl3Ex0ntJODibTIA914r1ETpgW3ArrO5rshj8qZo6hIP7l\noMkFzPiERvBalmzjG+GFqvBarndfVWgRuQB/t85UlwfvLmItDRnGCkIXVTWWzcct\n83ddK8KjVwKBgQC/x0oZxDiXAp8L4sRVuHvShrrhCcTzDDZLOgQ3g9ZJsOC+e5Lc\nPRMPCrefeY8s5HSaGHPfpbjRvcB7myjnhuMOu8OzpBM/Rp+ibYvZmn90/T098kEK\nswPTBk6tpnrbU/6eVIom7oaFYmzhtR3Cs7gzfr0NBtwGn4E4l6kK8P/EQQKBgQCh\nypvWWuE0K3+CQNmfESpq+POTkboRSqeqeffsuWBUVKHIG2ZaE+RHVlamutkPlgDg\nrqx5O7UkJ8dc8dWD7nF41nSDme86sP64/RoQ/X/IQR5pmywxxJIkzqn8IoCo7DXO\n+W5y/Mm1qKoMXKPEWDCTjS05uz1PPKwGbQ7Eqst2MQKBgFpShra1K+B1JQfEgwlm\nR4dk8SBnsKoHjspFF93lhg0aAG3Kg4+NPk+IaQG9L8J/cgQU1pq2DiZrAdSMrJc/\nfZNohQiDR/a5ZQUHazuYxVSBUDfP7CoGE6Dnvx4twsX+UaX/K9wawdREeJWfUetS\nkiLnEdn4j/U5l04NsGEQRKsQ\n-----END PRIVATE KEY-----\n",
+  "client_email": "stinkyturtle@stinkyturtle.iam.gserviceaccount.com",
+  "client_id": "106547010852722323926",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/stinkyturtle%40stinkyturtle.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
