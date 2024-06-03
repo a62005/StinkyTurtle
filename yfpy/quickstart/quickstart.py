@@ -6,10 +6,12 @@ __author__ = "Wren J. R. (uberfastman)"
 __email__ = "uberfastman@uberfastman.dev"
 
 import os
+import glob
 import sys
 from logging import DEBUG
 from pathlib import Path
 import json
+import ast
 
 from datetime import datetime, time, timedelta
 
@@ -44,6 +46,10 @@ data_dir = Path(__file__).parent / "output"
 # create YFPY Data instance for saving/loading data
 data = Data(data_dir)
 
+league_setting_current_dir = f"{os.getcwd()}/StinkyTurtle/config/"
+league_setting_file_path = glob.glob(os.path.join(league_setting_current_dir, 'league_setting.txt'))[0]
+league_setting_str = open(league_setting_file_path, 'r').read()
+league_setting = ast.literal_eval(league_setting_str)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # VARIABLE SETUP  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -63,8 +69,8 @@ def get_season():
     # season = 2020
     # season = 2021
     # season = 2022
-    season = 2023
-    return season
+    # season = 2023
+    return league_setting.get('year')
 
 
 season = get_season()
@@ -178,7 +184,7 @@ def get_league_id():
     # league_id = "655434"  # NFL - 2020
     # league_id = "413954"  # NFL - 2021
     # league_id = "791337"  # NFL - 2022 (divisions)
-    league_id = "186918"  # NFL - 2023
+    # league_id = "186918"  # NFL - 2023
 
     # HOCKEY
     # league_id = "69624"  # NHL - 2012
@@ -190,7 +196,7 @@ def get_league_id():
     # BASEBALL
     # league_id = "40134"  # MLB - 2021
 
-    return league_id
+    return league_setting.get('league_id')
 
 
 league_id = get_league_id()

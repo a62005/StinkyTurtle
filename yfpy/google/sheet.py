@@ -9,7 +9,7 @@ import ast
 
 
 sheet_app_script_url = 'https://script.google.com/macros/s/AKfycbyv4E1rzC5cutjXj1Zc_kmg9bXwjDWO5SYDwSdxsY8PePJkFcfeW0qi07mRZg57lt4K/exec'
-current_dir = f"{os.getcwd()}/StinkyTurtle"
+current_dir = f"{os.getcwd()}/StinkyTurtle/config/"
 file_path = glob.glob(os.path.join(current_dir, 'player_name.txt'))[0]
 player_list_str = open(file_path, 'r').read()
 player_list = ast.literal_eval(player_list_str)
