@@ -2,13 +2,21 @@ import uvicorn
 import requests
 import json
 from fastapi import FastAPI, Request
+from datetime import datetime
 import pyimgur
-
-app = FastAPI()
 import os
 
+app = FastAPI()
 script_directory = os.path.dirname(os.path.abspath(__file__))
 im = pyimgur.Imgur("22cca6882f4dfe8")
+
+def checkDate(date: str) -> bool:
+    if not date:
+        return False
+    # 獲取當前日期並將其格式化為字符串
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    # 將輸入的日期與當前日期進行比較
+    return date == current_date
 
 
 @app.get("/")
@@ -27,14 +35,26 @@ async def webhook(request: Request):
     img = f"{script_directory}/dataframe_image.png"
     
     if intent=='Ranking':
-        uploaded_img = im.upload_image(img, title="Test by Turtle")
+        with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
+            imgData = json.load(r)
+        date = imgData['date']
+        if checkDate(date):
+            link = imgData['imgurl']
+        else:
+            uploaded_img = im.upload_image(img, title="Test by Turtle")
+            link = uploaded_img.link
+            imgData['date'] = datetime.now().strftime('%Y-%m-%d')
+            imgData['imgurl'] = link
+            # 再以寫入模式打開文件，寫入數據
+            with open(f"{script_directory}/config/img_data.json", 'w', encoding='utf-8') as w:
+                json.dump(imgData, w)
         headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
         body = {
             'replyToken':replytoken,
             'messages':[{
                     'type': 'image',
-                    'originalContentUrl': uploaded_img.link,
-                    'previewImageUrl': uploaded_img.link
+                    'originalContentUrl': link,
+                    'previewImageUrl': link
                 }]
             }
         # 使用 requests 方法回傳訊息到 ＬINE
