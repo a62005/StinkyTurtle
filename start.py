@@ -52,8 +52,7 @@ def calculate_weeks(end_date):
     return weeks + 1
 
 def main():
-    # week = calculate_weeks(get_today()) - 1
-    week = "6"
+    week = calculate_weeks(get_today()) - 1
     today = get_today()
     print(f"第{week}週")
     week_data = get_all_data(week, today)

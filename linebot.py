@@ -56,30 +56,37 @@ def home():
 async def webhook(request: Request):
     req = await request.json()
     print(req)
+    inputText = req['queryResult']['queryText']              # 取得使用者輸入文字
     reText = req['queryResult']['fulfillmentText']          # 取得 Dialogflow 的回應文字
     intent = req['queryResult']['intent']['displayName']    # 取得 intent 分類
     replytoken = req['originalDetectIntentRequest']['payload']['data']['replyToken']  # 取得 LINE replyToken
     token = 'QwDA02XsTA0E1gostK0dmOjPSevU7NlD1jAWqIdegEkW+oKhpO005GPoT+ReeCHv4Hno33b1FQie+prDNWBklzi3YL0e/pep+U+7IG5jubfuVuT4RtFt0PDtgkfZr2i5XC+kv4ZXBQcmeszYnG3iZQdB04t89/1O/w1cDnyilFU='
     
     if intent=='Ranking':
-        if is_time_between():
+        if inputText == '#戰績':
+            if is_time_between():
+                return {
+                    "fulfillmentText": f"請於{running_tiem}後再查詢排行榜"
+                }
+            link = asyncImgLink()
+            headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
+            body = {
+                'replyToken':replytoken,
+                'messages':[{
+                        'type': 'image',
+                        'originalContentUrl': link,
+                        'previewImageUrl': link
+                    }]
+                }
+            # 使用 requests 方法回傳訊息到 ＬINE
+            result = requests.request('POST', 'https://api.line.me/v2/bot/message/reply',headers=headers,data=json.dumps(body).encode('utf-8'))
+            print(f"request {result.text}  {body}")
+            # 完成後回傳訊息到 Dialogflow
+        else:    
             return {
-                "fulfillmentText": f"請於{running_tiem}後再查詢排行榜"
+                "fulfillmentText": " ",
+                "source": ""
             }
-        link = asyncImgLink()
-        headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
-        body = {
-            'replyToken':replytoken,
-            'messages':[{
-                    'type': 'image',
-                    'originalContentUrl': link,
-                    'previewImageUrl': link
-                }]
-            }
-        # 使用 requests 方法回傳訊息到 ＬINE
-        result = requests.request('POST', 'https://api.line.me/v2/bot/message/reply',headers=headers,data=json.dumps(body).encode('utf-8'))
-        print(f"request {result.text}  {body}")
-        # 完成後回傳訊息到 Dialogflow
         return {
             "source": "webhookdata"
         }
