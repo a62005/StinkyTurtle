@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from datetime import datetime
 import pyimgur
 import os
+import subprocess
 
 app = FastAPI()
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -18,6 +19,23 @@ def checkDate(date: str) -> bool:
     # 將輸入的日期與當前日期進行比較
     return date == current_date
 
+def asyncImgLink():
+    img = f"{script_directory}/dataframe_image.png"
+    with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
+        imgData = json.load(r)
+    date = imgData['date']
+    if checkDate(date):
+        link = imgData['imgurl']
+    else:
+        subprocess.run(["python3", "start.py"])
+        uploaded_img = im.upload_image(img, title="Test by Turtle")
+        link = uploaded_img.link
+        imgData['date'] = datetime.now().strftime('%Y-%m-%d')
+        imgData['imgurl'] = link
+        # 再以寫入模式打開文件，寫入數據
+        with open(f"{script_directory}/config/img_data.json", 'w', encoding='utf-8') as w:
+            json.dump(imgData, w)
+    return link
 
 @app.get("/")
 def home():
@@ -31,23 +49,9 @@ async def webhook(request: Request):
     intent = req['queryResult']['intent']['displayName']    # 取得 intent 分類
     replytoken = req['originalDetectIntentRequest']['payload']['data']['replyToken']  # 取得 LINE replyToken
     token = 'QwDA02XsTA0E1gostK0dmOjPSevU7NlD1jAWqIdegEkW+oKhpO005GPoT+ReeCHv4Hno33b1FQie+prDNWBklzi3YL0e/pep+U+7IG5jubfuVuT4RtFt0PDtgkfZr2i5XC+kv4ZXBQcmeszYnG3iZQdB04t89/1O/w1cDnyilFU='
-   
-    img = f"{script_directory}/dataframe_image.png"
     
     if intent=='Ranking':
-        with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
-            imgData = json.load(r)
-        date = imgData['date']
-        if checkDate(date):
-            link = imgData['imgurl']
-        else:
-            uploaded_img = im.upload_image(img, title="Test by Turtle")
-            link = uploaded_img.link
-            imgData['date'] = datetime.now().strftime('%Y-%m-%d')
-            imgData['imgurl'] = link
-            # 再以寫入模式打開文件，寫入數據
-            with open(f"{script_directory}/config/img_data.json", 'w', encoding='utf-8') as w:
-                json.dump(imgData, w)
+        link = asyncImgLink()
         headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
         body = {
             'replyToken':replytoken,
