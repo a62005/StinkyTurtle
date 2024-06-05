@@ -38,7 +38,7 @@ def asyncImgLink():
     if checkDate(date):
         link = imgData['imgurl']
     else:
-        subprocess.run(["python3", "start.py"])
+        subprocess.run(["python3", "print_data.py"])
         uploaded_img = im.upload_image(img, title="Test by Turtle")
         link = uploaded_img.link
         imgData['date'] = datetime.now().strftime('%Y-%m-%d')
