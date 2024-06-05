@@ -19,6 +19,17 @@ def checkDate(date: str) -> bool:
     # 將輸入的日期與當前日期進行比較
     return date == current_date
 
+running_tiem = '14:00'
+start_time = datetime.strptime('00:00', '%H:%M').time()
+end_time = datetime.strptime(running_tiem, '%H:%M').time()
+def is_time_between():
+    # 如果開始時間小於結束時間，則檢查當前時間是否在這個範圍內 
+    if start_time < end_time:
+        return start_time <= datetime.now().time() <= end_time
+    # 如果開始時間大於結束時間，則檢查當前時間是否在這個範圍內
+    else:
+        return datetime.now().time() >= start_time or datetime.now().time() <= end_time
+
 def asyncImgLink():
     img = f"{script_directory}/dataframe_image.png"
     with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
@@ -51,6 +62,10 @@ async def webhook(request: Request):
     token = 'QwDA02XsTA0E1gostK0dmOjPSevU7NlD1jAWqIdegEkW+oKhpO005GPoT+ReeCHv4Hno33b1FQie+prDNWBklzi3YL0e/pep+U+7IG5jubfuVuT4RtFt0PDtgkfZr2i5XC+kv4ZXBQcmeszYnG3iZQdB04t89/1O/w1cDnyilFU='
     
     if intent=='Ranking':
+        if is_time_between():
+            return {
+                "fulfillmentText": f"請於{running_tiem}後再查詢排行榜"
+            }
         link = asyncImgLink()
         headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
         body = {
