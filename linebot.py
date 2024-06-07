@@ -48,6 +48,8 @@ def asyncImgLink():
             json.dump(imgData, w)
     return link
 
+import local_server
+
 @app.get("/")
 def home():
     return "hello world"
@@ -96,4 +98,4 @@ async def webhook(request: Request):
         return {
             "fulfillmentText": f'{reText} ( webhook )'
         }
-uvicorn.run(app, port=8001)
+uvicorn.run(app, port=local_server.port)
