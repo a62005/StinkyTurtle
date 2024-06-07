@@ -46,7 +46,7 @@ data_dir = Path(__file__).parent / "output"
 # create YFPY Data instance for saving/loading data
 data = Data(data_dir)
 
-league_setting_current_dir = f"{os.getcwd()}/StinkyTurtle/config/"
+league_setting_current_dir = f"{os.getcwd()}/config/"
 league_setting_file_path = glob.glob(os.path.join(league_setting_current_dir, 'league_setting.txt'))[0]
 league_setting_str = open(league_setting_file_path, 'r').read()
 league_setting = ast.literal_eval(league_setting_str)

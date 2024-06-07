@@ -1,9 +1,8 @@
-# import sys
-# print(f"paht {sys.path}")
-# sys.path.append('/yfpy/google')
-# sys.path.append('/yfpy/quickstart')
-from yfpy.google import sheet
-from yfpy.quickstart import quickstart
+import sys
+sys.path.append(f'{sys.path[0]}/yfpy/google')
+sys.path.append(f'{sys.path[0]}/yfpy/quickstart')
+import sheet
+import quickstart
 import time
 from datetime import datetime, timedelta
 import pandas as pd
@@ -49,6 +48,8 @@ def calculate_weeks(end_date):
     end_date = datetime.strptime(end_date, "%Y-%m-%d")
     difference = end_date - start_date
     weeks = difference.days // 7
+    if weeks >= 23:
+        return 23
     return weeks + 1
 
 def main():
