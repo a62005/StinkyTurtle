@@ -6,6 +6,9 @@ from datetime import datetime
 import pyimgur
 import os
 import subprocess
+import schedule
+import time
+import threading
 
 app = FastAPI()
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -22,6 +25,7 @@ def checkDate(date: str) -> bool:
 running_tiem = '14:00'
 start_time = datetime.strptime('00:00', '%H:%M').time()
 end_time = datetime.strptime(running_tiem, '%H:%M').time()
+
 def is_time_between():
     # 如果開始時間小於結束時間，則檢查當前時間是否在這個範圍內 
     if start_time < end_time:
@@ -47,6 +51,21 @@ def asyncImgLink():
         with open(f"{script_directory}/config/img_data.json", 'w', encoding='utf-8') as w:
             json.dump(imgData, w)
     return link
+
+def job():
+    subprocess.run(["python3", "print_data.py"])
+
+def run_schedule():
+    schedule.every().day.at("13:55").do(job)
+    
+    while True:
+        print("Running...")
+        schedule.run_pending()
+        time.sleep(300)
+
+schedule_thread = threading.Thread(target=run_schedule)
+schedule_thread.daemon = True  # 設置為守護線程，使其在主程序退出時自動終止
+schedule_thread.start()
 
 import local_server
 
