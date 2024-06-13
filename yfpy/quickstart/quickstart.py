@@ -412,6 +412,11 @@ def get_today_all_data(date, week):
             data['Today Played'] = dict(sorted(today_played.items(), key=lambda item: int(item[1]), reverse=True))
     return data
 
+league_info = yahoo_query.get_league_info()
+
+def get_league_info():
+    return league_info
+
 #{
     #"week": 2,
     #"date": "2021-10-25",

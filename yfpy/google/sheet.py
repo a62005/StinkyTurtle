@@ -75,7 +75,7 @@ def connect_to_sheet(sheet_name):
       return new_ws
 
 def parse_name_id(id):
-   return player_list.get(id, id) 
+   return player_list.get(int(id), id) 
 
 def parse_data_name(data):
    keys = data.keys()

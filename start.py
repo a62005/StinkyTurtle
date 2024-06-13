@@ -1,7 +1,7 @@
-import subprocess
+import print_data
 import requests
 
-subprocess.run(["python3", "print_data.py"])
+print_data.main()
 
 def send_notify(token, msg, filepath=None, stickerPackageId=None, stickerId=None):
     payload = {'message': msg}

@@ -5,10 +5,10 @@ from fastapi import FastAPI, Request
 from datetime import datetime
 import pyimgur
 import os
-import subprocess
 import schedule
 import time
 import threading
+import print_data
 
 app = FastAPI()
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -42,7 +42,7 @@ def asyncImgLink():
     if checkDate(date):
         link = imgData['imgurl']
     else:
-        subprocess.run(["python3", "print_data.py"])
+        print_data.main()
         uploaded_img = im.upload_image(img, title="Test by Turtle")
         link = uploaded_img.link
         imgData['date'] = datetime.now().strftime('%Y-%m-%d')
@@ -53,7 +53,7 @@ def asyncImgLink():
     return link
 
 def job():
-    subprocess.run(["python3", "print_data.py"])
+    print_data.main()
 
 def run_schedule():
     schedule.every().day.at("13:55").do(job)
