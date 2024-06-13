@@ -93,12 +93,17 @@ async def webhook(request: Request):
             headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
             body = {
                 'replyToken':replytoken,
-                'messages':[{
+                'messages':[
+                    {
+                    'type': 'text',
+                    'text': '【Stinky Turtle League】戰績出來啦'
+                    },{
                         'type': 'image',
                         'originalContentUrl': link,
                         'previewImageUrl': link
-                    }]
-                }
+                    }
+                ]
+            }
             # 使用 requests 方法回傳訊息到 ＬINE
             result = requests.request('POST', 'https://api.line.me/v2/bot/message/reply',headers=headers,data=json.dumps(body).encode('utf-8'))
             print(f"request {result.text}  {body}")
