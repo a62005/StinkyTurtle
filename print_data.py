@@ -63,7 +63,7 @@ def parse_data_to_img_from_xml():
 
 def main():
     league_info = quickstart.get_league_info()
-    if league_info.is_finished == 0:
+    if league_info.is_finished == 1:
         print("聯賽已結束")
         return
     week = league_info.current_week

@@ -14,7 +14,7 @@ app = FastAPI()
 script_directory = os.path.dirname(os.path.abspath(__file__))
 im = pyimgur.Imgur("22cca6882f4dfe8")
 
-def checkDate(date: str) -> bool:
+def check_date(date: str) -> bool:
     if not date:
         return False
     # 獲取當前日期並將其格式化為字符串
@@ -34,12 +34,12 @@ def is_time_between():
     else:
         return datetime.now().time() >= start_time or datetime.now().time() <= end_time
 
-def asyncImgLink():
+def async_img_link():
     img = f"{script_directory}/dataframe_image.png"
     with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
         imgData = json.load(r)
     date = imgData['date']
-    if checkDate(date):
+    if check_date(date):
         link = imgData['imgurl']
     else:
         print_data.main()
@@ -89,7 +89,7 @@ async def webhook(request: Request):
                 return {
                     "fulfillmentText": f"請於{running_tiem}後再查詢排行榜"
                 }
-            link = asyncImgLink()
+            link = async_img_link()
             headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
             body = {
                 'replyToken':replytoken,
