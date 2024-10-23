@@ -163,7 +163,7 @@ async def webhook(request: Request):
             }
         else:    
             return {
-                "fulfillmentText": " ",
+                "fulfillmentText": "資料同步中，兩分鐘後再試",
                 "source": ""
             }
     if intent=='Time':
