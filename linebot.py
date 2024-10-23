@@ -10,6 +10,7 @@ import time
 import threading
 import print_data
 
+season_is_finished = False
 app = FastAPI()
 script_directory = os.path.dirname(os.path.abspath(__file__))
 im = pyimgur.Imgur("22cca6882f4dfe8")
@@ -52,6 +53,11 @@ def async_img_link():
             json.dump(imgData, w)
     return link
 
+def get_current_img_link():
+    with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
+        imgData = json.load(r)
+        return imgData['imgurl']
+
 def job():
     print_data.main()
 
@@ -63,9 +69,36 @@ def run_schedule():
         schedule.run_pending()
         time.sleep(300)
 
-schedule_thread = threading.Thread(target=run_schedule)
-schedule_thread.daemon = True  # 設置為守護線程，使其在主程序退出時自動終止
-schedule_thread.start()
+def time_until_target():
+    # 設定未來的時間點，例如 "10/07 22:00"
+    future_time_str = "10/23 00:00"
+
+    # 取得當前年份，並將未來的時間點轉換為 datetime 對象
+    current_year = datetime.now().year
+    future_time = datetime.strptime(f"{current_year}/{future_time_str}", "%Y/%m/%d %H:%M")
+
+    # 取得當前時間
+    now = datetime.now()
+
+    # 計算剩餘時間
+    remaining_time = future_time - now
+
+    # 如果指定的時間已經過去，返回0時間
+    if remaining_time.total_seconds() < 0:
+        remaining_time = timedelta(0)
+
+    # 格式化為 dd hh:mm:ss
+    days = remaining_time.days
+    hours, remainder = divmod(remaining_time.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    return f"距離開打 \n倒數 {days:02d}天 {hours:02d}小時 {minutes:02d}分 {seconds:02d}秒"
+
+if not season_is_finished:
+    schedule_thread = threading.Thread(target=run_schedule)
+    schedule_thread.daemon = True  # 設置為守護線程，使其在主程序退出時自動終止
+    schedule_thread.start()
+
 
 import local_server
 
@@ -78,26 +111,33 @@ async def webhook(request: Request):
     req = await request.json()
     print(req)
     inputText = req['queryResult']['queryText']              # 取得使用者輸入文字
-    reText = req['queryResult']['fulfillmentText']          # 取得 Dialogflow 的回應文字
+    # reText = req['queryResult']['fulfillmentText']          # 取得 Dialogflow 的回應文字
     intent = req['queryResult']['intent']['displayName']    # 取得 intent 分類
     replytoken = req['originalDetectIntentRequest']['payload']['data']['replyToken']  # 取得 LINE replyToken
     token = 'QwDA02XsTA0E1gostK0dmOjPSevU7NlD1jAWqIdegEkW+oKhpO005GPoT+ReeCHv4Hno33b1FQie+prDNWBklzi3YL0e/pep+U+7IG5jubfuVuT4RtFt0PDtgkfZr2i5XC+kv4ZXBQcmeszYnG3iZQdB04t89/1O/w1cDnyilFU='
     
     if intent=='Ranking':
         if inputText == '#戰績':
-            if is_time_between():
+            if season_is_finished:
+                return {
+                    "fulfillmentText": "球季開始了嗎?急什麼"
+                }
+            if is_time_between() and not season_is_finished:
                 return {
                     "fulfillmentText": f"請於{running_tiem}後再查詢排行榜"
                 }
-            link = async_img_link()
+            if season_is_finished:
+                link = get_current_img_link()
+            else:
+                link = async_img_link()
             headers = {'Authorization':'Bearer ' + token,'Content-Type':'application/json'}
             body = {
                 'replyToken':replytoken,
                 'messages':[
                     {
-                    'type': 'text',
-                    'text': '【Stinky Turtle League】戰績出來啦'
-                    },{
+                        'type': 'text',
+                        'text': '【Stinky Turtle League】戰績出來啦'
+                    }, {
                         'type': 'image',
                         'originalContentUrl': link,
                         'previewImageUrl': link
@@ -116,10 +156,61 @@ async def webhook(request: Request):
         return {
             "source": "webhookdata"
         }
+    if intent=='Bonus':
+        if inputText == '#獎金':
+            return {
+                "source": "webhookdata"
+            }
+        else:    
+            return {
+                "fulfillmentText": " ",
+                "source": ""
+            }
+    if intent=='Time':
+        if inputText == '#開季':
+            # img_url = req['queryResult']['fulfillmentMessages'][0]['image']['imageUri']
+            return {
+                "fulfillmentMessages": [
+                    {
+                        "text": {
+                            "text": [
+                                f"{time_until_target()}"
+                            ]
+                        }
+                    },
+                    # {
+                    #     "image": {
+                    #         "imageUri": img_url
+                    #     }
+                    # }
+                ],
+                "source": "webhookdata"
+            }
+        if intent=='Name':
+            if '#' in inputText:
+                img_url = req['queryResult']['fulfillmentMessages'][0]['image']['imageUri']
+                return {
+                    "fulfillmentMessages": [
+                        {
+                            "image": {
+                                "imageUri": img_url
+                            }
+                        }
+                    ],
+                    "source": "webhookdata"
+                }
+
+        else:    
+            return {
+                "fulfillmentText": " ",
+                "source": ""
+            }
+    
+        
     # 如果收到的 intent 不是 radar
-    else:
-        # 使用 Dialogflow 產生的回應訊息
-        return {
-            "fulfillmentText": f'{reText} ( webhook )'
-        }
+    # else:
+    #     # 使用 Dialogflow 產生的回應訊息
+    #     return {
+    #         "fulfillmentText": f'{reText} ( webhook )'
+    #     }
 uvicorn.run(app, port=local_server.port)

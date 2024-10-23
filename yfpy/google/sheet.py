@@ -40,6 +40,8 @@ def set_sheet_text_center(ws):
         cell.set_horizontal_alignment(pygsheets.custom_types.HorizontalAlignment.CENTER)
 
 def get_previous_week_name(week):
+    if week is 1:
+      return "第1週"
     # 從字符串中提取出數字 N
     match = re.search(r'\d+', week)
     if match is None:

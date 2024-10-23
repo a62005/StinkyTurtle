@@ -2953,11 +2953,11 @@ class YahooFantasySportsQuery(object):
         res = ''
         if is_weekly:
           res = self.get_response(
-              f"https://fantasysports.yahooapis.com/fantasy/v2/team/428.l.186918.t.{team_key}/stats;type=week;week={week};"
+              f"https://fantasysports.yahooapis.com/fantasy/v2/team/454.l.992.t.{team_key}/stats;type=week;week={week};"
           ).text
         else:
           res = self.get_response(
-              f"https://fantasysports.yahooapis.com/fantasy/v2/team/428.l.186918.t.{team_key}/stats;type=date;date={week};"
+              f"https://fantasysports.yahooapis.com/fantasy/v2/team/454.l.992.t.{team_key}/stats;type=date;date={week};"
           ).text  
         data = json.loads(res)
         stats = data["fantasy_content"]["team"][1]["team_stats"]["stats"]
@@ -3009,14 +3009,14 @@ class YahooFantasySportsQuery(object):
         return result
 
     def get_all_data(self, week, is_weekly):
-        num_teams = 10
+        num_teams = 12
         result = {}
         # result['stat'] = parse_stat_id(hit)
         # result['teams'] = result.get('teams', [])
         for k in range(1, num_teams + 1):
           data = self.get_team_week_data(k, week, is_weekly) 
           
-          print(f"data2 {data}")
+          print(f"data2 {data} {week}")
           name = str(data['team_id'])
           keys = data.keys()
           for key in keys:
@@ -3029,16 +3029,17 @@ class YahooFantasySportsQuery(object):
           # stat = data['Games Played']
         keys = result.keys()
         for key in keys:
+         print(f"result {result[key]} {key}")
          if key == 'FGM/A' or key == 'FTM/A' or key == 'Today Played':
            continue
          elif key == 'Games Played':
            result[key] = dict(sorted(result[key].items(), key=lambda item: int(item[1].split('/')[0]), reverse=True))
          elif key == 'FG%' or key == 'FT%':
-           result[key] = dict(sorted(result[key].items(), key=lambda item: float(item[1]), reverse=True))
+             result[key] = dict(sorted(result[key].items(), key=lambda item: float(item[1]) if item[1] else 0.0, reverse=True))
          elif key == 'TO':
-           result[key] = dict(sorted(result[key].items(), key=lambda item: int(item[1]), reverse=False))
+           result[key] = dict(sorted(result[key].items(), key=lambda item: int(item[1]) if item[1] else 0, reverse=False))
          else:  
-           result[key] = dict(sorted(result[key].items(), key=lambda item: int(item[1]), reverse=True))
+           result[key] = dict(sorted(result[key].items(), key=lambda item: int(item[1]) if item[1] else 0, reverse=True))
            result['FGM/A'] = {k: result['FGM/A'][k] for k in result['FG%']}
            result['FTM/A'] = {k: result['FTM/A'][k] for k in result['FT%']}
         return result

@@ -67,8 +67,7 @@ def main():
         print("聯賽已結束")
         return
     week = league_info.current_week
-    today = league_info.end_date
-    # today = get_today()
+    today = get_today()
     print(f"第{week}週  第{today}天")
     week_data = get_all_data(week, today)
     today_data = get_today_data(today, week)

@@ -24,8 +24,8 @@ def send_notify(token, msg, filepath=None, stickerPackageId=None, stickerId=None
 # Test line notify
 
 # 臭烏龜聯賽
-token = "Ao7pCGAeIeLluPxy4mQGXv1jhK7tVY29Arc31QuG2Z7"
+# token = "Ao7pCGAeIeLluPxy4mQGXv1jhK7tVY29Arc31QuG2Z7"
 
-# 我要發大財
-token = "yrjISonW7S5g5F9xTjuLCs6cpimSdoiIQ8OmiNTaMec"
-send_notify(token=token, msg='戰績出來啦', filepath='dataframe_image.png', stickerPackageId='', stickerId='')
+# # 我要發大財
+# token = "yrjISonW7S5g5F9xTjuLCs6cpimSdoiIQ8OmiNTaMec"
+# send_notify(token=token, msg='戰績出來啦', filepath='dataframe_image.png', stickerPackageId='', stickerId='')

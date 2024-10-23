@@ -8,5 +8,7 @@
     7: 'Covi',
     8: '安迪',
     9: 'Jason',
-    10: 'Wesley'
+    10: 'Joseph',
+    11: 'Jerry',
+    12: '小舅'
   }

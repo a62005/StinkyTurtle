@@ -70,7 +70,7 @@ def get_season():
     # season = 2021
     # season = 2022
     # season = 2023
-    return league_setting.get('year')
+    return league_setting.get("year")
 
 
 season = get_season()
@@ -130,7 +130,7 @@ def get_game_id():
     # game_id = 399  # NFL - 2020
     # game_id = 406  # NFL - 2021
     # game_id = 414  # NFL - 2022 (divisions)
-    game_id = 428  # NFL - 2023
+    game_id = 454  # NFL - 2023
 
     # HOCKEY
     # game_id = 303  # NHL - 2012
@@ -159,7 +159,7 @@ def get_game_key():
     # game_key = "399"  # NFL - 2020
     # game_key = "406"  # NFL - 2021
     # game_key = "414"  # NFL - 2022 (divisions)
-    game_key = "428"  # NFL - 2023
+    game_key = "454"  # NFL - 2023
 
     # HOCKEY
     # game_key = "303"  # NHL - 2012
@@ -196,7 +196,7 @@ def get_league_id():
     # BASEBALL
     # league_id = "40134"  # MLB - 2021
 
-    return league_setting.get('league_id')
+    return league_setting.get("league_id")
 
 
 league_id = get_league_id()
@@ -358,7 +358,6 @@ def get_all_data(week, date):
     now = datetime.now()
     games_palyed_txt_name = f"played_for_{week}_week.txt"
     today_played_txt_name = f"today_player_{date}.txt"
-    print(f"data {data}")
     if now.hour >= 14 and now.hour < 24:
         result = {'Games Played': {}}
         if os.path.isfile(games_palyed_txt_name):
@@ -412,9 +411,8 @@ def get_today_all_data(date, week):
             data['Today Played'] = dict(sorted(today_played.items(), key=lambda item: int(item[1]), reverse=True))
     return data
 
-league_info = yahoo_query.get_league_info()
-
 def get_league_info():
+    league_info = yahoo_query.get_league_info()
     return league_info
 
 #{
