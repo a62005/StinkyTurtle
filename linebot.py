@@ -8,7 +8,7 @@ import os
 import schedule
 import time
 import threading
-import print_data
+import importlib
 
 season_is_finished = False
 app = FastAPI()
@@ -43,6 +43,8 @@ def async_img_link():
     if check_date(date):
         link = imgData['imgurl']
     else:
+        print_data = importlib.import_module('print_data')  # 動態導入
+        importlib.reload(print_data)  # 重新加載模組
         print_data.main()
         uploaded_img = im.upload_image(img, title="Test by Turtle")
         link = uploaded_img.link
@@ -59,13 +61,13 @@ def get_current_img_link():
         return imgData['imgurl']
 
 def job():
-    print_data.main()
+    async_img_link()
 
 def run_schedule():
-    schedule.every().day.at("13:55").do(job)
+    schedule.every().day.at("13:40").do(job)
     
     while True:
-        print("Running...")
+        print(f"Running... at {datetime.now().strftime('%m-%d %H:%M:%S')}")
         schedule.run_pending()
         time.sleep(300)
 
