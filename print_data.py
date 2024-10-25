@@ -59,7 +59,7 @@ def parse_data_to_img_from_xml():
 
     styled_df = df.style.set_properties(**{'text-align': 'center'})
     # 将DataFrame保存为图像
-    dfi.export(styled_df, 'dataframe_image.png', max_cols=-1)
+    dfi.export(styled_df, 'dataframe_image.png', fontsize=12)
 
 def main():
     league_info = quickstart.get_league_info()
@@ -76,3 +76,12 @@ def main():
     time.sleep(10)
     parse_data_to_img_from_xml()
     print("資料完成囉，拜拜啦～")
+
+# main()
+
+# test_today_data()
+
+# parse_data_to_img_from_xml()
+
+# import matplotlib
+# print(matplotlib.get_cachedir())
