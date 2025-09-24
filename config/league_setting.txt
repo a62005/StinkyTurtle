@@ -1,4 +1,4 @@
 {
-    "year": 2024,
-    "league_id": "992"
+    "year": 2025,
+    "league_id": "18457"
   }

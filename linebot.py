@@ -10,7 +10,7 @@ import time
 import threading
 import importlib
 
-season_is_finished = False
+season_is_finished = True
 app = FastAPI()
 script_directory = os.path.dirname(os.path.abspath(__file__))
 im = pyimgur.Imgur("22cca6882f4dfe8")
@@ -73,7 +73,7 @@ def run_schedule():
 
 def time_until_target():
     # 設定未來的時間點，例如 "10/07 22:00"
-    future_time_str = "10/23 00:00"
+    future_time_str = "10/3 21:00"
 
     # 取得當前年份，並將未來的時間點轉換為 datetime 對象
     current_year = datetime.now().year
@@ -95,6 +95,31 @@ def time_until_target():
     minutes, seconds = divmod(remainder, 60)
 
     return f"距離開打 \n倒數 {days:02d}天 {hours:02d}小時 {minutes:02d}分 {seconds:02d}秒"
+
+def time_until_draft():
+    # 設定未來的時間點，例如 "10/07 22:00"
+    future_time_str = "10/3 21:00"
+
+    # 取得當前年份，並將未來的時間點轉換為 datetime 對象
+    current_year = datetime.now().year
+    future_time = datetime.strptime(f"{current_year}/{future_time_str}", "%Y/%m/%d %H:%M")
+
+    # 取得當前時間
+    now = datetime.now()
+
+    # 計算剩餘時間
+    remaining_time = future_time - now
+
+    # 如果指定的時間已經過去，返回0時間
+    if remaining_time.total_seconds() < 0:
+        remaining_time = timedelta(0)
+
+    # 格式化為 dd hh:mm:ss
+    days = remaining_time.days
+    hours, remainder = divmod(remaining_time.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    return f"距離選秀 \n倒數 {days:02d}天 {hours:02d}小時 {minutes:02d}分 {seconds:02d}秒"
 
 if not season_is_finished:
     schedule_thread = threading.Thread(target=run_schedule)
@@ -188,19 +213,56 @@ async def webhook(request: Request):
                 ],
                 "source": "webhookdata"
             }
-        if intent=='Name':
-            if '#' in inputText:
-                img_url = req['queryResult']['fulfillmentMessages'][0]['image']['imageUri']
-                return {
-                    "fulfillmentMessages": [
-                        {
-                            "image": {
-                                "imageUri": img_url
-                            }
+        elif inputText == '#選秀':
+            # img_url = req['queryResult']['fulfillmentMessages'][0]['image']['imageUri']
+            return {
+                "fulfillmentMessages": [
+                    {
+                        "text": {
+                            "text": [
+                                f"{time_until_draft()}"
+                            ]
                         }
-                    ],
-                    "source": "webhookdata"
-                }
+                    },
+                    # {
+                    #     "image": {
+                    #         "imageUri": img_url
+                    #     }
+                    # }
+                ],
+                "source": "webhookdata"
+            }
+    if intent=='Name':
+        if inputText == '#胡哲':
+            return {
+                "fulfillmentMessages": [
+                    {
+                        "text": {
+                            "text": [
+                                "在那叫什麼"
+                            ]
+                        }
+                    },
+                    # {
+                    #     "image": {
+                    #         "imageUri": img_url
+                    #     }
+                    # }
+                ],
+                "source": "webhookdata"
+            }
+        elif '#' in inputText:
+            img_url = req['queryResult']['fulfillmentMessages'][0]['image']['imageUri']
+            return {
+                "fulfillmentMessages": [
+                    {
+                        "image": {
+                            "imageUri": img_url
+                        }
+                    }
+                ],
+                "source": "webhookdata"
+            }
 
         else:    
             return {
