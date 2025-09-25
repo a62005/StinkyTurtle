@@ -2,9 +2,18 @@ import json
 import os
 import pyimgur
 import importlib
+import sys
 from datetime import datetime
-from .time_utils import check_date
-from config.settings import IMGUR_CLIENT_ID
+
+# 處理相對導入問題
+try:
+    from .time_utils import check_date
+    from config.settings import IMGUR_CLIENT_ID
+except ImportError:
+    # 如果相對導入失敗，使用絕對導入
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from utils.time_utils import check_date
+    from config.settings import IMGUR_CLIENT_ID
 
 script_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 im = pyimgur.Imgur(IMGUR_CLIENT_ID)

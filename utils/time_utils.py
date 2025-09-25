@@ -1,5 +1,14 @@
 from datetime import datetime, timedelta
-from config.settings import TARGET_TIME, DRAFT_TIME
+import sys
+import os
+
+# 處理相對導入問題
+try:
+    from config.settings import TARGET_TIME, DRAFT_TIME
+except ImportError:
+    # 如果相對導入失敗，使用絕對導入
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from config.settings import TARGET_TIME, DRAFT_TIME
 
 def check_date(date: str) -> bool:
     if not date:

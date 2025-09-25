@@ -1,9 +1,20 @@
 import requests
 import json
 import importlib
-from utils.time_utils import is_time_between, time_until_target, time_until_draft
-from utils.image_utils import async_img_link, get_current_img_link
-from config.settings import RUNNING_TIME, LINE_TOKEN
+import sys
+import os
+
+# 處理相對導入問題
+try:
+    from utils.time_utils import is_time_between, time_until_target, time_until_draft
+    from utils.image_utils import async_img_link, get_current_img_link
+    from config.settings import RUNNING_TIME, LINE_TOKEN
+except ImportError:
+    # 如果相對導入失敗，使用絕對導入
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from utils.time_utils import is_time_between, time_until_target, time_until_draft
+    from utils.image_utils import async_img_link, get_current_img_link
+    from config.settings import RUNNING_TIME, LINE_TOKEN
 
 def handle_ranking_intent(input_text, reply_token, season_is_finished):
     """處理排行榜相關請求"""
