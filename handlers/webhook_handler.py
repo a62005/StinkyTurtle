@@ -101,6 +101,45 @@ def handle_time_intent(input_text):
             "source": "webhookdata"
         }
 
+def handle_test_intent(input_text, reply_token):
+    """處理測試相關請求"""
+    if input_text == '#測試':
+        from utils.image_server import get_test_image_url
+        
+        test_image_url = get_test_image_url()
+        if not test_image_url:
+            return {
+                "fulfillmentText": "圖片服務未啟用",
+                "source": ""
+            }
+        
+        headers = {'Authorization':'Bearer ' + LINE_TOKEN,'Content-Type':'application/json'}
+        body = {
+            'replyToken': reply_token,
+            'messages':[
+                {
+                    'type': 'text',
+                    'text': '測試圖片來了！'
+                }, {
+                    'type': 'image',
+                    'originalContentUrl': test_image_url,
+                    'previewImageUrl': test_image_url
+                }
+            ]
+        }
+        # 使用 requests 方法回傳訊息到 LINE
+        result = requests.request('POST', 'https://api.line.me/v2/bot/message/reply',headers=headers,data=json.dumps(body).encode('utf-8'))
+        print(f"Test image request: {result.text}  {body}")
+        
+        return {
+            "source": "webhookdata"
+        }
+    else:
+        return {
+            "fulfillmentText": " ",
+            "source": ""
+        }
+
 def handle_name_intent(input_text, req):
     """處理姓名相關請求"""
     if input_text == '#胡哲':
@@ -146,7 +185,10 @@ def process_webhook_request(req, season_is_finished):
     intent = req['queryResult']['intent']['displayName']
     reply_token = req['originalDetectIntentRequest']['payload']['data']['replyToken']
     
-    if intent == 'Ranking':
+    # 檢查是否為測試請求（不依賴 Dialogflow intent）
+    if intent == 'Test':
+        return handle_test_intent(input_text, reply_token)
+    elif intent == 'Ranking':
         return handle_ranking_intent(input_text, reply_token, season_is_finished)
     elif intent == 'Bonus':
         return handle_bonus_intent(input_text)

@@ -1,21 +1,15 @@
 #!/usr/bin/env python3
 """
-LINE Bot 統一啟動腳本 - 簡化版
+獨立的 Cloudflare Tunnel 啟動腳本
 """
-import os
-import sys
-import time
-import threading
-import subprocess
-import re
-import uvicorn
 from google.cloud import dialogflow_v2 as dialogflow
 from google.protobuf import field_mask_pb2 as field_mask
+import os
+import subprocess
+import sys
+import time
+import re
 
-# 導入 LINE Bot 應用
-from linebot import app
-
-# 設置環境變數
 script_directory = os.path.dirname(os.path.abspath(__file__))
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = f'{script_directory}/dialogflow_auth.json'
 
@@ -30,13 +24,13 @@ def update_dialogflow_callback_url(url):
         update_mask = field_mask.FieldMask(paths=['generic_web_service.uri', 'generic_web_service.request_headers'])
         
         response = client.update_fulfillment(fulfillment=fulfillment, update_mask=update_mask)
-        print(f'✅ 已更新 Dialogflow Webhook: {url}/webhook')
+        print(f'✅ Updated Dialogflow Webhook: {url}/webhook')
         return True
     except Exception as e:
-        print(f'❌ 更新 Dialogflow 失敗: {e}')
+        print(f'❌ Failed to update Dialogflow: {e}')
         return False
 
-def start_tunnel(port):
+def start_cloudflare_tunnel(port):
     """啟動 Cloudflare Tunnel"""
     try:
         print(f"🚀 啟動 Cloudflare Tunnel for port {port}...")
@@ -44,9 +38,7 @@ def start_tunnel(port):
         # 檢查 cloudflared 是否存在
         check_process = subprocess.run(['which', 'cloudflared'], capture_output=True)
         if check_process.returncode != 0:
-            print("❌ 找不到 cloudflared 命令")
-            print("📦 請先安裝: brew install cloudflared")
-            return None, None
+            raise FileNotFoundError("cloudflared not found")
         
         # 啟動 cloudflared
         process = subprocess.Popen(
@@ -72,19 +64,34 @@ def start_tunnel(port):
                 # 查找 tunnel URL
                 url_match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
                 if url_match:
-                    tunnel_url = url_match.group()
-                    print(f"🎉 Tunnel URL: {tunnel_url}")
+                    url = url_match.group()
+                    print(f"🎉 Tunnel URL: {url}")
                     
                     # 保存 URL 到文件
                     with open('.tunnel_url', 'w') as f:
-                        f.write(tunnel_url)
+                        f.write(url)
                     
                     # 更新 Dialogflow
-                    update_dialogflow_callback_url(tunnel_url)
+                    update_dialogflow_callback_url(url)
                     
                     print(f"✅ Cloudflare Tunnel 已啟動！")
-                    print(f"🔗 URL: {tunnel_url}")
-                    return process, tunnel_url
+                    print(f"🔗 URL: {url}")
+                    print("📱 現在可以啟動 LINE Bot: python linebot.py")
+                    print("⏹️  按 Ctrl+C 停止 tunnel")
+                    
+                    # 保持運行
+                    try:
+                        while True:
+                            if process.poll() is not None:
+                                print("⚠️  Tunnel 進程意外退出")
+                                break
+                            time.sleep(1)
+                    except KeyboardInterrupt:
+                        print("\n🛑 停止 Cloudflare Tunnel...")
+                        process.terminate()
+                        process.wait()
+                    
+                    return url
             
             if process.poll() is not None:
                 print("❌ Cloudflare Tunnel 進程意外退出")
@@ -94,57 +101,16 @@ def start_tunnel(port):
         
         print("⏰ 超時：未能獲取 Tunnel URL")
         process.terminate()
-        return None, None
+        return None
         
+    except FileNotFoundError:
+        print("❌ 找不到 cloudflared 命令")
+        print("📦 請先安裝: brew install cloudflared")
+        return None
     except Exception as e:
         print(f"❌ Tunnel 啟動失敗: {e}")
-        return None, None
-
-def main():
-    """主啟動函數"""
-    # 獲取端口配置
-    try:
-        import local_server
-        port = local_server.port
-    except:
-        port = 8001  # 默認端口
-    
-    print("🐢 StinkyTurtle LINE Bot 啟動中...")
-    print("=" * 50)
-    
-    tunnel_process = None
-    
-    # 詢問是否需要啟動 tunnel
-    use_tunnel = input("是否需要啟動 Cloudflare Tunnel？(y/N): ").lower().strip()
-    
-    if use_tunnel in ['y', 'yes', '是']:
-        # 啟動 tunnel
-        tunnel_process, tunnel_url = start_tunnel(port)
-        if not tunnel_process:
-            print("⚠️  Tunnel 啟動失敗，將只在本地運行")
-        else:
-            print("✅ Tunnel 已在背景運行")
-    
-    print("\n" + "=" * 50)
-    
-    try:
-        # 啟動 LINE Bot 服務器
-        print(f"🚀 啟動 LINE Bot 服務器在端口 {port}")
-        print(f"📱 Webhook URL: http://localhost:{port}/webhook")
-        if tunnel_process:
-            print(f"🌐 外部 Webhook URL: {tunnel_url}/webhook")
-        print("⏹️  按 Ctrl+C 停止服務器")
-        print("=" * 50)
-        
-        uvicorn.run(app, host="0.0.0.0", port=port)
-        
-    except KeyboardInterrupt:
-        print("\n🛑 正在停止服務...")
-        if tunnel_process:
-            print("🛑 停止 Cloudflare Tunnel...")
-            tunnel_process.terminate()
-            tunnel_process.wait()
-        print("👋 服務已停止，再見！")
+        return None
 
 if __name__ == "__main__":
-    main()
+    port = 8001
+    start_cloudflare_tunnel(port)
