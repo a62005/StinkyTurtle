@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 LINE Bot 自動啟動腳本 - 全自動版
 自動檢測是否需要啟動 tunnel，然後啟動服務
