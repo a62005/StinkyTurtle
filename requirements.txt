@@ -4,3 +4,6 @@ requests
 pyimgur
 apscheduler
 google-cloud-dialogflow
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
