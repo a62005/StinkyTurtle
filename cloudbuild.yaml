@@ -1,0 +1,12 @@
+steps:
+  # 部署到 App Engine
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: ['app', 'deploy', '--quiet']
+
+# 設定超時時間
+timeout: '1200s'
+
+# 設定選項
+options:
+  logging: CLOUD_LOGGING_ONLY
