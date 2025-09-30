@@ -32,7 +32,7 @@ class ServiceManager:
             import local_server
             self.port = local_server.port
         except:
-            self.port = 8001
+            self.port = 8080
     
     def check_cloudflared(self):
         """檢查 cloudflared 是否可用"""

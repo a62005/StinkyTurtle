@@ -31,20 +31,20 @@ async def webhook(request: Request):
     print(req)
     return process_webhook_request(req, SEASON_IS_FINISHED)
 
-def start_server(port=8001):
+def start_server(port=8080):
     """啟動服務器"""
     print(f"🚀 啟動 LINE Bot 服務器在端口 {port}")
     print(f"📱 Webhook URL: http://localhost:{port}/webhook")
     print("⏹️  按 Ctrl+C 停止服務器")
     
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, port=port)
 
-# if __name__ == "__main__":
-#     # 從 local_server 獲取端口配置
-#     try:
-#         import local_server
-#         port = local_server.port
-#     except:
-#         port = 8001  # 默認端口
+if __name__ == "__main__":
+    # 從 local_server 獲取端口配置
+    try:
+        import local_server
+        port = local_server.port
+    except:
+        port = 8080  # 默認端口
     
-#     start_server(port)
+    start_server(port)
