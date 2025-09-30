@@ -1,8 +1,5 @@
 runtime: python39
 
-env_variables:
-  GOOGLE_APPLICATION_CREDENTIALS: dialogflow_auth.json
-
 automatic_scaling:
   min_instances: 1
   max_instances: 10
