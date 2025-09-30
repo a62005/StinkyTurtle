@@ -11,16 +11,13 @@ import threading
 import subprocess
 import re
 import uvicorn
-from google.cloud import dialogflow_v2 as dialogflow
-from google.protobuf import field_mask_pb2 as field_mask
+# 移除 Dialogflow 導入 (認證檔案已被禁用)
 
 # 導入 LINE Bot 應用
 from linebot import app
 from config.settings import USE_LOCAL_IMAGE_SERVER
 
-# 設置環境變數
-script_directory = os.path.dirname(os.path.abspath(__file__))
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = f'{script_directory}/dialogflow_auth.json'
+# 移除認證設定 (認證檔案已被禁用)
 
 class ServiceManager:
     def __init__(self):
@@ -43,21 +40,11 @@ class ServiceManager:
             return False
     
     def update_dialogflow_webhook(self, url):
-        """更新 Dialogflow webhook URL"""
-        try:
-            client = dialogflow.FulfillmentsClient()
-            name = f'projects/stinkyturtle-ntnj/agent/fulfillment'
-            fulfillment = client.get_fulfillment(name=name)
-            
-            fulfillment.generic_web_service.uri = f"{url}/webhook"
-            update_mask = field_mask.FieldMask(paths=['generic_web_service.uri', 'generic_web_service.request_headers'])
-            
-            response = client.update_fulfillment(fulfillment=fulfillment, update_mask=update_mask)
-            print(f'✅ 已更新 Dialogflow Webhook: {url}/webhook')
-            return True
-        except Exception as e:
-            print(f'❌ 更新 Dialogflow 失敗: {e}')
-            return False
+        """顯示 Dialogflow webhook URL (需手動設定)"""
+        webhook_url = f"{url}/webhook"
+        print(f'📝 請手動設定 Dialogflow Webhook: {webhook_url}')
+        print(f'🔗 Dialogflow Console: https://dialogflow.cloud.google.com/#/agent/stinkyturtle-ntnj/fulfillment')
+        return True
     
     def start_tunnel_async(self):
         """在背景啟動 tunnel"""
