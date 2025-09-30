@@ -25,11 +25,33 @@ if not SEASON_IS_FINISHED:
 def home():
     return "hello world"
 
+@app.get("/test")
+def test():
+    return {"status": "ok", "message": "Webhook endpoint is working"}
+
 @app.post('/webhook')
 async def webhook(request: Request):
-    req = await request.json()
-    print(req)
-    return process_webhook_request(req, SEASON_IS_FINISHED)
+    print("🎯 收到 Webhook 請求")
+    try:
+        req = await request.json()
+        print(f"📨 請求內容: {req}")
+        
+        # 檢查是否為 Dialogflow 請求
+        if 'queryResult' in req:
+            intent = req['queryResult']['intent']['displayName']
+            query_text = req['queryResult']['queryText']
+            print(f"🤖 Dialogflow Intent: {intent}")
+            print(f"💬 用戶輸入: {query_text}")
+        
+        result = process_webhook_request(req, SEASON_IS_FINISHED)
+        print(f"📤 回應內容: {result}")
+        return result
+        
+    except Exception as e:
+        print(f"❌ Webhook 處理錯誤: {e}")
+        import traceback
+        print(f"📋 錯誤詳情: {traceback.format_exc()}")
+        return {"fulfillmentText": "處理請求時發生錯誤"}
 
 def start_server(port=8080):
     """啟動服務器"""

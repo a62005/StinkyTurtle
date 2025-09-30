@@ -9,4 +9,4 @@ handlers:
 - url: /.*
   script: auto
 
-entrypoint: python main.py
+entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
