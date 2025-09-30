@@ -39,12 +39,12 @@ def start_server(port=8001):
     
     uvicorn.run(app, host="0.0.0.0", port=port)
 
-if __name__ == "__main__":
-    # 從 local_server 獲取端口配置
-    try:
-        import local_server
-        port = local_server.port
-    except:
-        port = 8001  # 默認端口
+# if __name__ == "__main__":
+#     # 從 local_server 獲取端口配置
+#     try:
+#         import local_server
+#         port = local_server.port
+#     except:
+#         port = 8001  # 默認端口
     
-    start_server(port)
+#     start_server(port)

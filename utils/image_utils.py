@@ -59,11 +59,11 @@ def async_img_link(force_update=False):
         print(f"使用現有圖片連結: {link}")
     else:
         try:
-            print("開始重新生成圖片...")
-            # 重新生成圖片
-            print_data = importlib.import_module('print_data')  # 動態導入
-            importlib.reload(print_data)  # 重新加載模組
-            print_data.main()
+            # print("開始重新生成圖片...")
+            # # 重新生成圖片
+            # print_data = importlib.import_module('print_data')  # 動態導入
+            # importlib.reload(print_data)  # 重新加載模組
+            # print_data.main()
             
             if USE_LOCAL_IMAGE_SERVER:
                 # 使用本地服務器
