@@ -13,10 +13,15 @@ print(f"📋 GOOGLE_CLOUD_PROJECT: {os.environ.get('GOOGLE_CLOUD_PROJECT', 'Not 
 # 只在 GCP 環境中自動更新 Dialogflow
 if os.environ.get('GAE_ENV', '').startswith('standard'):
     def update_dialogflow():
-        time.sleep(10)
+        print("⏰ Dialogflow 更新線程開始，等待 5 秒...")
+        time.sleep(5)
+        print("🔄 開始執行 Dialogflow 更新...")
         try:
+            print("📦 導入 Dialogflow 模組...")
             from google.cloud import dialogflow_v2 as dialogflow
+            print("📦 導入 protobuf 模組...")
             from google.protobuf import field_mask_pb2 as field_mask
+            print("📦 導入 google.auth 模組...")
             import google.auth
             from google.auth import compute_engine
             
@@ -80,6 +85,9 @@ if os.environ.get('GAE_ENV', '').startswith('standard'):
             
             client.update_fulfillment(fulfillment=fulfillment, update_mask=update_mask)
             print(f'✅ Dialogflow Webhook 已更新: {app_url}/webhook')
+        except ImportError as import_error:
+            print(f'❌ 模組導入失敗: {import_error}')
+            print('💡 可能的原因: requirements.txt 中缺少必要的套件')
         except Exception as e:
             import traceback
             error_type = type(e).__name__
@@ -99,6 +107,8 @@ if os.environ.get('GAE_ENV', '').startswith('standard'):
                 print('💡 建議: 檢查 Dialogflow Agent 是否存在，或專案 ID 是否正確')
             elif 'api' in str(e).lower() and 'not enabled' in str(e).lower():
                 print('💡 建議: 在 GCP Console 中啟用 Dialogflow API')
+        finally:
+            print("🏁 Dialogflow 更新線程結束")
     
     print("🔄 啟動 Dialogflow 更新線程...")
     threading.Thread(target=update_dialogflow, daemon=True).start()
