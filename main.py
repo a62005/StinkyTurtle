@@ -98,15 +98,15 @@ class GCPServiceManager:
 service_manager = GCPServiceManager()
 service_manager.initialize_services()
 
-# 導出 FastAPI 應用供 App Engine 使用
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8080))
+# # 導出 FastAPI 應用供 App Engine 使用
+# if __name__ == "__main__":
+#     import uvicorn
+#     port = int(os.environ.get("PORT", 8080))
     
-    print(f"🚀 啟動 LINE Bot 服務器在端口 {port}")
-    if service_manager.app_url:
-        print(f"📱 Webhook URL: {service_manager.app_url}/webhook")
-    else:
-        print(f"📱 本地 Webhook: http://localhost:{port}/webhook")
+#     print(f"🚀 啟動 LINE Bot 服務器在端口 {port}")
+#     if service_manager.app_url:
+#         print(f"📱 Webhook URL: {service_manager.app_url}/webhook")
+#     else:
+#         print(f"📱 本地 Webhook: http://localhost:{port}/webhook")
     
-    uvicorn.run(app, host="0.0.0.0", port=port)
+#     uvicorn.run(app, host="0.0.0.0", port=port)
