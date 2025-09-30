@@ -6,6 +6,10 @@ import time
 # 導入 LINE Bot 應用
 from linebot import app
 
+print("🚀 main.py 已啟動")
+print(f"🌍 GAE_ENV: {os.environ.get('GAE_ENV', 'Not set')}")
+print(f"📋 GOOGLE_CLOUD_PROJECT: {os.environ.get('GOOGLE_CLOUD_PROJECT', 'Not set')}")
+
 # 只在 GCP 環境中自動更新 Dialogflow
 if os.environ.get('GAE_ENV', '').startswith('standard'):
     def update_dialogflow():
@@ -53,6 +57,9 @@ if os.environ.get('GAE_ENV', '').startswith('standard'):
             elif 'api' in str(e).lower() and 'not enabled' in str(e).lower():
                 print('💡 建議: 在 GCP Console 中啟用 Dialogflow API')
     
+    print("🔄 啟動 Dialogflow 更新線程...")
     threading.Thread(target=update_dialogflow, daemon=True).start()
+else:
+    print("ℹ️  非 GCP 環境，跳過 Dialogflow 更新")
 
 # 導出 app 供 GCP 使用
