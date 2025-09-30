@@ -1,5 +1,7 @@
 fastapi
 uvicorn[standard]
+flask
+gunicorn
 requests
 pyimgur
 apscheduler
