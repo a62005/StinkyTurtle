@@ -37,12 +37,23 @@ if is_gcp:
     # 延遲更新 Dialogflow（避免阻塞啟動）
     def update_dialogflow_later():
         import time
-        from google.cloud import dialogflow_v2 as dialogflow
-        from google.protobuf import field_mask_pb2 as field_mask
         
         time.sleep(10)  # 等待服務完全啟動
         try:
+            from google.cloud import dialogflow_v2 as dialogflow
+            from google.protobuf import field_mask_pb2 as field_mask
+            
+            # 在 GCP 環境中，不設定 GOOGLE_APPLICATION_CREDENTIALS
+            # 讓它使用 App Engine 預設服務帳戶
+            if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+                del os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+            
+            print("🔐 使用 App Engine 預設服務帳戶認證...")
+            
+            # 建立 Dialogflow 客戶端（使用預設認證）
             client = dialogflow.FulfillmentsClient()
+            
+            # 更新 fulfillment
             name = f'projects/stinkyturtle-ntnj/agent/fulfillment'
             fulfillment = client.get_fulfillment(name=name)
             
@@ -51,9 +62,16 @@ if is_gcp:
             update_mask = field_mask.FieldMask(paths=['generic_web_service.uri'])
             
             client.update_fulfillment(fulfillment=fulfillment, update_mask=update_mask)
-            print(f'✅ Dialogflow Webhook 已更新: {webhook_url}')
+            print(f'✅ Dialogflow Webhook 已自動更新: {webhook_url}')
+            
         except Exception as e:
-            print(f'⚠️  Dialogflow 更新失敗: {e}')
+            print(f'⚠️  Dialogflow 自動更新失敗: {e}')
+            print(f'🔧 正在設定服務帳戶權限...')
+            
+            # 如果失敗，可能是權限問題，提供解決方案
+            print(f'📝 需要給 App Engine 服務帳戶 Dialogflow 權限')
+            print(f'🔗 執行此指令來修復權限:')
+            print(f'gcloud projects add-iam-policy-binding {project_id} --member="serviceAccount:{project_id}@appspot.gserviceaccount.com" --role="roles/dialogflow.client"')
     
     # 在背景執行 Dialogflow 更新
     import threading
@@ -64,6 +82,11 @@ else:
 
 print("✅ 服務初始化完成")
 print("=" * 50)
+
+# 添加一個簡單的健康檢查端點
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "message": "StinkyTurtle LINE Bot is running!"}
 
 # 導出 FastAPI 應用供 App Engine 使用
 if __name__ == "__main__":
