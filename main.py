@@ -24,12 +24,20 @@ if os.environ.get('GAE_ENV', '').startswith('standard'):
             print(f'🔐 使用認證: {type(credentials).__name__}')
             print(f'📋 專案 ID: {project}')
             
+            # 檢查服務帳戶資訊
+            if hasattr(credentials, 'service_account_email'):
+                print(f'📧 服務帳戶: {credentials.service_account_email}')
+            elif hasattr(credentials, '_service_account_email'):
+                print(f'📧 服務帳戶: {credentials._service_account_email}')
+            else:
+                print('📧 服務帳戶: 無法取得服務帳戶資訊')
+            
             project_id = os.environ.get('GOOGLE_CLOUD_PROJECT', project)
             app_url = f"https://{project_id}.appspot.com"
             print(f'🌐 App URL: {app_url}')
             
-            # 使用 App Engine 預設服務帳戶 (無需 JSON 金鑰)
-            client = dialogflow.FulfillmentsClient(credentials=credentials)
+            # 使用 App Engine 預設服務帳戶 (讓 SDK 自動處理認證)
+            client = dialogflow.FulfillmentsClient()
             # 使用動態專案 ID 而不是硬編碼
             dialogflow_project = project_id or 'stinkyturtle-ntnj'
             name = f'projects/{dialogflow_project}/agent/fulfillment'
