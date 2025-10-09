@@ -4,12 +4,16 @@ sys.path.append(f'{sys.path[0]}/yfpy/quickstart')
 import sheet
 import quickstart
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+# 定義台北時區 (GMT+8)
+TAIPEI_TZ = timezone(timedelta(hours=8))
 import pandas as pd
 import dataframe_image as dfi
 
 def get_today():
-    yesterday = datetime.now() - timedelta(days=1)
+    # 使用台北時間計算昨天的日期
+    yesterday = datetime.now(TAIPEI_TZ) - timedelta(days=1)
     return yesterday.strftime('%Y-%m-%d')
 
 def get_all_data(week, today):

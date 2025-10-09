@@ -31,7 +31,10 @@ def test():
 
 @app.post('/webhook')
 async def webhook(request: Request):
-    print("🎯 收到 Webhook 請求")
+    from utils.timezone_utils import format_taipei_time
+    
+    taipei_time = format_taipei_time()
+    print(f"🎯 收到 Webhook 請求 at {taipei_time}")
     try:
         req = await request.json()
         print(f"📨 請求內容: {req}")
