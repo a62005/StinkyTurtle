@@ -1,9 +1,12 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import atexit
 import sys
 import os
+
+# 定義台北時區 (GMT+8)
+TAIPEI_TZ = timezone(timedelta(hours=8))
 
 # 處理相對導入問題
 try:
@@ -18,25 +21,28 @@ except ImportError:
 def job():
     """排程任務：更新圖片"""
     try:
-        print(f"開始執行排程任務... at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        taipei_time = datetime.now(TAIPEI_TZ).strftime('%Y-%m-%d %H:%M:%S %Z')
+        print(f"開始執行排程任務... at {taipei_time}")
         # 強制更新圖片
         async_img_link(force_update=True)
-        print(f"排程任務執行完成 at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        taipei_time = datetime.now(TAIPEI_TZ).strftime('%Y-%m-%d %H:%M:%S %Z')
+        print(f"排程任務執行完成 at {taipei_time}")
     except Exception as e:
         print(f"排程任務執行失敗: {e}")
 
 def start_scheduler():
     """啟動排程器"""
     try:
-        scheduler = BackgroundScheduler()
+        # 設定排程器使用台北時區
+        scheduler = BackgroundScheduler(timezone=TAIPEI_TZ)
         
         # 解析時間 (格式: "13:50")
         hour, minute = map(int, SCHEDULE_TIME.split(':'))
         
-        # 添加每日定時任務
+        # 添加每日定時任務 (使用台北時區)
         scheduler.add_job(
             func=job,
-            trigger=CronTrigger(hour=hour, minute=minute),
+            trigger=CronTrigger(hour=hour, minute=minute, timezone=TAIPEI_TZ),
             id='daily_update',
             name='每日圖片更新',
             replace_existing=True
@@ -44,7 +50,7 @@ def start_scheduler():
         
         # 啟動排程器
         scheduler.start()
-        print(f"排程器已啟動，將在每天 {SCHEDULE_TIME} 執行更新任務")
+        print(f"排程器已啟動，將在每天台北時間 {SCHEDULE_TIME} 執行更新任務")
         
         # 確保程序退出時關閉排程器
         atexit.register(lambda: scheduler.shutdown())
