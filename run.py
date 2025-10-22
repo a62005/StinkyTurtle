@@ -124,9 +124,13 @@ class ServiceManager:
                         self.tunnel_url = url_match.group()
                         print(f"🎉 Tunnel URL: {self.tunnel_url}")
                         
-                        # 保存 URL 到文件
-                        with open('.tunnel_url', 'w') as f:
-                            f.write(self.tunnel_url)
+                        # 保存 URL 到文件（僅在非 App Engine 環境）
+                        if not os.environ.get('GAE_ENV', '').startswith('standard'):
+                            try:
+                                with open('.tunnel_url', 'w') as f:
+                                    f.write(self.tunnel_url)
+                            except Exception as e:
+                                print(f"⚠️ 無法儲存 tunnel URL: {e}")
                         
                         # 更新 Dialogflow
                         self.update_dialogflow_webhook(self.tunnel_url)

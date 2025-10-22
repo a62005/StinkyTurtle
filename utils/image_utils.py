@@ -18,6 +18,64 @@ except ImportError:
 script_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 im = pyimgur.Imgur(IMGUR_CLIENT_ID)
 
+# 在 App Engine 環境中使用記憶體儲存
+_img_data_cache = {
+    'date': '2000-01-01',
+    'imgurl': '',
+    'method': 'imgur'
+}
+
+def get_img_data_path():
+    """獲取圖片資料檔案路徑，在 App Engine 中使用 /tmp"""
+    if os.environ.get('GAE_ENV', '').startswith('standard'):
+        # App Engine 環境，使用 /tmp 目錄
+        return '/tmp/img_data.json'
+    else:
+        # 本地環境
+        return f"{script_directory}/config/img_data.json"
+
+def load_img_data():
+    """載入圖片資料"""
+    global _img_data_cache
+    
+    if os.environ.get('GAE_ENV', '').startswith('standard'):
+        # App Engine 環境，使用記憶體快取
+        return _img_data_cache.copy()
+    
+    try:
+        img_data_path = get_img_data_path()
+        with open(img_data_path, 'r', encoding='utf-8') as r:
+            return json.load(r)
+    except (FileNotFoundError, json.JSONDecodeError):
+        # 如果文件不存在或格式錯誤，返回預設數據
+        return {
+            'date': '2000-01-01',
+            'imgurl': '',
+            'method': 'imgur'
+        }
+
+def save_img_data(img_data):
+    """儲存圖片資料"""
+    global _img_data_cache
+    
+    if os.environ.get('GAE_ENV', '').startswith('standard'):
+        # App Engine 環境，更新記憶體快取
+        _img_data_cache.update(img_data)
+        print("📝 圖片資料已儲存到記憶體快取")
+        return
+    
+    try:
+        img_data_path = get_img_data_path()
+        # 確保目錄存在
+        os.makedirs(os.path.dirname(img_data_path), exist_ok=True)
+        with open(img_data_path, 'w', encoding='utf-8') as w:
+            json.dump(img_data, w)
+        print(f"📝 圖片資料已儲存到: {img_data_path}")
+    except Exception as e:
+        print(f"⚠️ 無法儲存圖片資料: {e}")
+        # 在本地環境也使用記憶體快取作為備用
+        _img_data_cache.update(img_data)
+
 def get_server_url():
     """獲取服務器 URL"""
     try:
@@ -37,16 +95,8 @@ def async_img_link(force_update=False):
     """
     img = f"{script_directory}/dataframe_image.png"
     
-    try:
-        with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
-            imgData = json.load(r)
-    except (FileNotFoundError, json.JSONDecodeError):
-        # 如果文件不存在或格式錯誤，創建預設數據
-        imgData = {
-            'date': '2000-01-01',
-            'imgurl': '',
-            'method': 'imgur'
-        }
+    # 使用新的載入函數
+    imgData = load_img_data()
     
     date = imgData['date']
     
@@ -80,9 +130,8 @@ def async_img_link(force_update=False):
             imgData['imgurl'] = link
             imgData['method'] = use_method
             
-            # 再以寫入模式打開文件，寫入數據
-            with open(f"{script_directory}/config/img_data.json", 'w', encoding='utf-8') as w:
-                json.dump(imgData, w)
+            # 使用新的儲存函數
+            save_img_data(imgData)
                 
         except Exception as e:
             print(f"圖片生成失敗: {e}")
@@ -98,6 +147,6 @@ def async_img_link(force_update=False):
     return link
 
 def get_current_img_link():
-    with open(f"{script_directory}/config/img_data.json", 'r', encoding='utf-8') as r:
-        imgData = json.load(r)
-        return imgData['imgurl']
+    """獲取目前的圖片連結"""
+    imgData = load_img_data()
+    return imgData.get('imgurl', '')

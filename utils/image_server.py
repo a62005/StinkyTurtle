@@ -59,17 +59,18 @@ def get_server_url():
     if tunnel_url:
         return tunnel_url
     
-    # 2. 從 .tunnel_url 文件獲取
-    try:
-        script_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        tunnel_file = os.path.join(script_directory, '.tunnel_url')
-        if os.path.exists(tunnel_file):
-            with open(tunnel_file, 'r') as f:
-                url = f.read().strip()
-                if url:
-                    return url
-    except:
-        pass
+    # 2. 從 .tunnel_url 文件獲取（僅在非 App Engine 環境）
+    if not os.environ.get('GAE_ENV', '').startswith('standard'):
+        try:
+            script_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            tunnel_file = os.path.join(script_directory, '.tunnel_url')
+            if os.path.exists(tunnel_file):
+                with open(tunnel_file, 'r') as f:
+                    url = f.read().strip()
+                    if url:
+                        return url
+        except:
+            pass
     
     # 3. 從 .env 文件獲取
     try:
